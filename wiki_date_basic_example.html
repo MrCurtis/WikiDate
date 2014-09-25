@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>wiki_date basic example</title>
+    <style>
+      #wiki_content{
+        position: absolute;
+        left: 210px;
+        right: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main_container">
+      <input type="text" id="date_picker">
+      <div id="wiki_content"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="wiki_date.js"></script>
+    <script>
+      function addContentToDiv (content) {
+	$('#wiki_content').html(content);
+      }
+      $('#date_picker').datepicker();
+      $('#date_picker').datepicker("setDate", "01/01/1960");
+      $('#date_picker').datepicker("show");
+      $('#date_picker').change( function(){
+	var the_date = $('#date_picker').datepicker('getDate');
+	var the_month = $.datepicker.formatDate("MM" , the_date);
+	var the_day= $.datepicker.formatDate("dd", the_date);
+	var the_year= $.datepicker.formatDate("yy", the_date);
+        wikiDate.getWikiInfo(addContentToDiv, the_year, the_month, the_day );
+      });
+    </script>
+  </body>
+</html>
