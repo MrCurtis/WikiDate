@@ -37,10 +37,9 @@ var wiki_date_random_date = ( function (seed){
         }
     }
     return rnd_date;
-})(4817);
+})(22);
 
-QUnit.test( "wiki_date inputs", function( assert ){ 
-    console.log('inputs being tested');
+QUnit.test( "getWikiInfo inputs", function( assert ){ 
     assert.throws(function() {wikiDate.getWikiInfo(1,2,3,4,5);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'getWikiInfo has three required arguments and one optional argument, but 5 arguments given.'));
     assert.throws(function() {wikiDate.getWikiInfo(1,2);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'getWikiInfo has three required arguments and one optional argument, but 2 arguments given.'));
     assert.throws(function() {wikiDate.getWikiInfo(1,2,3,4);}, new wikiDate.Error('WrongArgumentTypeError', 'First argument (callback) must be a function'));
@@ -54,6 +53,14 @@ QUnit.test( "wiki_date inputs", function( assert ){
     assert.throws(function() {wikiDate.getWikiInfo(wikiDate.getWikiInfo,2014,'January','1st');}, new wikiDate.Error('WrongArgumentTypeError', 'Fourth argument (day) must be an integer'));
     assert.throws(function() {wikiDate.getWikiInfo(wikiDate.getWikiInfo,'2001','January','23a');}, new wikiDate.Error('WrongArgumentTypeError', 'Fourth argument (day) must be an integer'));
 });
+
+QUnit.test( "removeLinks inputs", function( assert ){ 
+    var jquery_test_object = $('<div><a><p></p></a></div>');
+    assert.throws(function() {wikiDate.removeLinks(1);}, new wikiDate.Error('WrongArgumentTypeError', 'First argument must be a jQuery object'));
+    assert.throws(function() {wikiDate.removeLinks();}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
+    assert.throws(function() {wikiDate.removeLinks(jquery_test_object, jquery_test_object);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
+});
+
 
 QUnit.asyncTest( "wiki_date coverage", function( assert ){ 
     QUnit.expect(100);

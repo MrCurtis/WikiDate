@@ -179,9 +179,19 @@ var wikiDate = ( function () {
         this.name = name;
         this.message = message;
     }
+           
+    var removeLinks = function (content) {
+        if ( !(arguments.length === 1) ){
+            throw new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument')
+        }
+        if ( !(content instanceof jQuery) ){
+            throw new Error('WrongArgumentTypeError', 'First argument must be a jQuery object');
+        }
+    };
 
     return {
         getWikiInfo: getWikiInfo,
+        removeLinks: removeLinks,
         Error: Error,
     }
 
