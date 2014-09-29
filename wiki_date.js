@@ -187,6 +187,12 @@ var wikiDate = ( function () {
         if ( !(content instanceof jQuery) ){
             throw new Error('WrongArgumentTypeError', 'First argument must be a jQuery object');
         }
+        content.find('a').each(function (){
+            $(this).contents().unwrap();
+        });
+        //console.log('refs: ', content.find('.reference'));
+        content.find('.reference').remove();
+        return content;
     };
 
     return {

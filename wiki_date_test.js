@@ -37,7 +37,7 @@ var wiki_date_random_date = ( function (seed){
         }
     }
     return rnd_date;
-})(22);
+})(987);
 
 QUnit.test( "getWikiInfo inputs", function( assert ){ 
     assert.throws(function() {wikiDate.getWikiInfo(1,2,3,4,5);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'getWikiInfo has three required arguments and one optional argument, but 5 arguments given.'));
@@ -55,24 +55,31 @@ QUnit.test( "getWikiInfo inputs", function( assert ){
 });
 
 QUnit.test( "removeLinks inputs", function( assert ){ 
-    var jquery_test_object = $('<div><a><p></p></a></div>');
+    var jquery_test_object_links = $('<div><div><a href="blah.com/blah"><p>Blahh</p></a><a><p>deBlahh</p></a></div></div>');
+    var jquery_test_object_refs = $('<div><div><p>Blahh</p><p>deBlahh</p><sup id="cite_ref-60" class="reference"><a href="#cite_note-60"></sup></div></div>');
     assert.throws(function() {wikiDate.removeLinks(1);}, new wikiDate.Error('WrongArgumentTypeError', 'First argument must be a jQuery object'));
     assert.throws(function() {wikiDate.removeLinks();}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
-    assert.throws(function() {wikiDate.removeLinks(jquery_test_object, jquery_test_object);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
+    assert.throws(function() {wikiDate.removeLinks(jquery_test_object_links, jquery_test_object_refs);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
+    assert.ok(wikiDate.removeLinks(jquery_test_object_links) instanceof jQuery, 'Return value of removeLinks should be a jQuery object');
+    assert.equal(wikiDate.removeLinks(jquery_test_object_links).html(),'<div><p>Blahh</p><p>deBlahh</p></div>' );
+    assert.equal(wikiDate.removeLinks(jquery_test_object_refs).html(),'<div><p>Blahh</p><p>deBlahh</p></div>' );
 });
 
 
 QUnit.asyncTest( "wiki_date coverage", function( assert ){ 
-    QUnit.expect(100);
-    QUnit.stop(99);
+    var number_of_cases = 2;
+    QUnit.expect(number_of_cases);
+    QUnit.stop(number_of_cases-1);
     function addContent (content, successful, year, month, day) {
         var date_details = year+'_'+month+'_'+day;
         var date_p = $('<p></p>').html(date_details);
         var date_info = $('<div></div>').html(content);
+        var date_info_no_links = wikiDate.removeLinks(date_info);
         if (successful){
             date_p.css('color', 'green');
             $('#successful_content_div').append(date_p);
             $('#successful_content_div').append(date_info);
+            $('#successful_content_div').append(date_info_no_links);
         }else{
             date_p.css('color', 'red');
             $('#failed_content_div').append(date_p);
@@ -86,7 +93,7 @@ QUnit.asyncTest( "wiki_date coverage", function( assert ){
         QUnit.start();
     }
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < number_of_cases; i++) {
         var date = wiki_date_random_date();
         wikiDate.getWikiInfo(theCallback, date.year, date.month, date.day);
     }
