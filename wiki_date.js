@@ -190,8 +190,8 @@ var wikiDate = ( function () {
         content.find('a').each(function (){
             $(this).contents().unwrap();
         });
-        //console.log('refs: ', content.find('.reference'));
         content.find('.reference').remove();
+        content.find('.mw-editsection').remove();
         return content;
     };
 

@@ -6,7 +6,7 @@
       #wiki_content{
         position: absolute;
         left: 210px;
-        right: 30px;
+        right: 210px;
       }
     </style>
   </head>
@@ -20,6 +20,7 @@
     <script type="text/javascript" src="wiki_date.js"></script>
     <script>
       function addContentToDiv (content) {
+        wikiDate.removeLinks(content);
 	$('#wiki_content').html(content);
       }
       $('#date_picker').datepicker();

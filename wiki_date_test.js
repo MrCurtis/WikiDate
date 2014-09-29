@@ -57,6 +57,7 @@ QUnit.test( "getWikiInfo inputs", function( assert ){
 QUnit.test( "removeLinks inputs", function( assert ){ 
     var jquery_test_object_links = $('<div><div><a href="blah.com/blah"><p>Blahh</p></a><a><p>deBlahh</p></a></div></div>');
     var jquery_test_object_refs = $('<div><div><p>Blahh</p><p>deBlahh</p><sup id="cite_ref-60" class="reference"><a href="#cite_note-60"></sup></div></div>');
+    var jquery_test_object_refs = $('<div><div><p>Blahh</p><p>deBlahh</p><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a title="Edit section: January 2, 1960 (Saturday)" href="/w/index.php?title=January_1960&action=edit&section=2">edit</a><span class="mw-editsection-bracket">]</span></span></div></div>');
     assert.throws(function() {wikiDate.removeLinks(1);}, new wikiDate.Error('WrongArgumentTypeError', 'First argument must be a jQuery object'));
     assert.throws(function() {wikiDate.removeLinks();}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
     assert.throws(function() {wikiDate.removeLinks(jquery_test_object_links, jquery_test_object_refs);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
@@ -67,7 +68,7 @@ QUnit.test( "removeLinks inputs", function( assert ){
 
 
 QUnit.asyncTest( "wiki_date coverage", function( assert ){ 
-    var number_of_cases = 2;
+    var number_of_cases = 100;
     QUnit.expect(number_of_cases);
     QUnit.stop(number_of_cases-1);
     function addContent (content, successful, year, month, day) {
