@@ -39,6 +39,40 @@ var wiki_date_random_date = ( function (seed){
     return rnd_date;
 })(987);
 
+var wikiDateIsWikiInfo = function (object){
+    if ( !(object.hasClass('wiki_date_info')) ){
+        return false;
+    }
+    if ( !(object.find(':eq(0)').hasClass('wiki_date_date')) ){
+        return false;
+    }
+    if ( !(object.find(':eq(1)').hasClass('wiki_date_content')) ){
+        return false;
+    }
+    if ( !(object.find(':eq(2)').hasClass('wiki_date_references')) ){
+        return false;
+    }
+    return true;
+};
+
+QUnit.test( "wikiDateIsWikiInfo test", function ( assert) {
+    var is_wiki_info = [
+        $('<div class="wiki_date_info"><div class="wiki_date_date"></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
+    ];
+    var not_wiki_info = [
+        $('<div><div class="wiki_date_date"></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
+        $('<div class="wiki_date_info"><div></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
+        $('<div class="wiki_date_info"><div class="wiki_date_date"></div><div></div><div class="wiki_date_references"></div></div>'),
+        $('<div class="wiki_date_info"><div class="wiki_date_date"></div><div class="wiki_date_content"></div><div></div></div>'),
+        $('<div class="wiki_date_info"><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div><div class="wiki_date_date"></div>'),
+    ];
+    for (var i = 0; i < is_wiki_info.length; i++){
+        assert.ok( wikiDateIsWikiInfo (is_wiki_info[i]) === true );
+    }
+    for (var i = 0; i < not_wiki_info.length; i++){
+        assert.ok( wikiDateIsWikiInfo (not_wiki_info[i]) === false );
+    }
+});
 QUnit.test( "getWikiInfo inputs", function( assert ){ 
     assert.throws(function() {wikiDate.getWikiInfo(1,2,3,4,5);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'getWikiInfo has three required arguments and one optional argument, but 5 arguments given.'));
     assert.throws(function() {wikiDate.getWikiInfo(1,2);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'getWikiInfo has three required arguments and one optional argument, but 2 arguments given.'));
@@ -68,7 +102,7 @@ QUnit.test( "removeLinks inputs", function( assert ){
 
 
 QUnit.asyncTest( "wiki_date coverage", function( assert ){ 
-    var number_of_cases = 100;
+    var number_of_cases = 2;
     QUnit.expect(number_of_cases);
     QUnit.stop(number_of_cases-1);
     function addContent (content, successful, year, month, day) {
