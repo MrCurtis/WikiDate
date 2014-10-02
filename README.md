@@ -12,6 +12,19 @@ wiki_date allows you to retrieve information for what happened on either a speci
 
 where the *wiki_date_date* div contains the date information, the *wiki_date_content* div contains the actual data about what happened on tht day/month, and the *wiki_date_reference* div contains a link to the original Wikipedia page, or pages, from which the information is taken.  
 
+Basic Example
+-------------
+
+A minimal example can be found can be found in the wiki_date_basic_example.html file. In this example a callback is defined to inject the wiki_info object into the page.
+>		function addContentToDiv (content) {
+>        			wikiDate.removeLinks(content);
+>        			$('#wiki_content').html(content);
+>		}
+
+Note also that the *removeLinks* function is called within this callback to remove extraneous links and references before adding it the wiki_info content to the page.  
+The callback is then passed as an argument to the *getWikiInfo* function.
+>		wikiDate.getWikiInfo(addContentToDiv, the_year, the_month, the_day ); 
+
 Reference
 ---------
 
