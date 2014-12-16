@@ -1,5 +1,4 @@
 var wiki_date_random_date = ( function (seed){
-    var seed = seed;
     var array_of_months = [
         'January',
         'February',
@@ -37,19 +36,25 @@ var wiki_date_random_date = ( function (seed){
         }
     }
     return rnd_date;
-})(987);
+})(56113);
 
 var wikiDateIsWikiInfo = function (object){
+    try{
+        object.hasClass('wiki_date_info');
+    }
+    catch (e) {
+        return false;
+    }
     if ( !(object.hasClass('wiki_date_info')) ){
         return false;
     }
-    if ( !(object.find(':eq(0)').hasClass('wiki_date_date')) ){
+    if ( !(object.children().eq(0).hasClass('wiki_date_date')) ){
         return false;
     }
-    if ( !(object.find(':eq(1)').hasClass('wiki_date_content')) ){
+    if ( !(object.children().eq(1).hasClass('wiki_date_content')) ){
         return false;
     }
-    if ( !(object.find(':eq(2)').hasClass('wiki_date_references')) ){
+    if ( !(object.children().eq(2).hasClass('wiki_date_references')) ){
         return false;
     }
     return true;
@@ -58,6 +63,8 @@ var wikiDateIsWikiInfo = function (object){
 QUnit.test( "wikiDateIsWikiInfo test", function ( assert) {
     var is_wiki_info = [
         $('<div class="wiki_date_info"><div class="wiki_date_date"></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
+        $('<div class="wiki_date_info"><div class="wiki_date_date"><p>A date</p></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
+        $('<div class="wiki_date_info"><div class="wiki_date_date"><p>A date</p></div><div class="wiki_date_content"><p>Some content</p></div><div class="wiki_date_references"><a href="blah.com">Some refs</a></div></div>'),
     ];
     var not_wiki_info = [
         $('<div><div class="wiki_date_date"></div><div class="wiki_date_content"></div><div class="wiki_date_references"></div></div>'),
@@ -89,20 +96,57 @@ QUnit.test( "getWikiInfo inputs", function( assert ){
 });
 
 QUnit.test( "removeLinks inputs", function( assert ){ 
-    var jquery_test_object_links = $('<div><div><a href="blah.com/blah"><p>Blahh</p></a><a><p>deBlahh</p></a></div></div>');
-    var jquery_test_object_refs = $('<div><div><p>Blahh</p><p>deBlahh</p><sup id="cite_ref-60" class="reference"><a href="#cite_note-60"></sup></div></div>');
-    var jquery_test_object_refs = $('<div><div><p>Blahh</p><p>deBlahh</p><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a title="Edit section: January 2, 1960 (Saturday)" href="/w/index.php?title=January_1960&action=edit&section=2">edit</a><span class="mw-editsection-bracket">]</span></span></div></div>');
+    var remove_links_test_objects = [
+        {
+            object: $('<div><div><a href="blah.com/blah"><p>Blahh</p></a><a><p>deBlahh</p></a></div></div>'),
+            expected: '<div><p>Blahh</p><p>deBlahh</p></div>',
+        },
+        {
+            object: $('<div><div><p>Blahh</p><p>deBlahh</p><sup id="cite_ref-60" class="reference"><a href="#cite_note-60"></sup></div></div>'),
+            expected: '<div><p>Blahh</p><p>deBlahh</p></div>',
+        },
+        {
+            object: $('<div><div><p>Blahh</p><p>deBlahh</p><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a title="Edit section: January 2, 1960 (Saturday)" href="/w/index.php?title=January_1960&action=edit&section=2">edit</a><span class="mw-editsection-bracket">]</span></span></div></div>'),
+            expected: '<div><p>Blahh</p><p>deBlahh</p></div>',
+        },
+        {
+            object: $('<div><div><a class="wiki_date_link" href="blah.com/blah"><p>Blahh</p></a><a><p>deBlahh</p></a></div></div>'),
+            expected: '<div><a class="wiki_date_link" href="blah.com/blah"><p>Blahh</p></a><p>deBlahh</p></div>',
+        },
+    ];
+
     assert.throws(function() {wikiDate.removeLinks(1);}, new wikiDate.Error('WrongArgumentTypeError', 'First argument must be a jQuery object'));
     assert.throws(function() {wikiDate.removeLinks();}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
-    assert.throws(function() {wikiDate.removeLinks(jquery_test_object_links, jquery_test_object_refs);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
-    assert.ok(wikiDate.removeLinks(jquery_test_object_links) instanceof jQuery, 'Return value of removeLinks should be a jQuery object');
-    assert.equal(wikiDate.removeLinks(jquery_test_object_links).html(),'<div><p>Blahh</p><p>deBlahh</p></div>' );
-    assert.equal(wikiDate.removeLinks(jquery_test_object_refs).html(),'<div><p>Blahh</p><p>deBlahh</p></div>' );
+    assert.throws(function() {wikiDate.removeLinks(remove_links_test_objects[0].object, remove_links_test_objects[1].object);}, new wikiDate.Error('IncorrectNumberOfArgumentsException', 'removeLinks takes exactly one argument'));
+    assert.ok(wikiDate.removeLinks(remove_links_test_objects[0].object) instanceof jQuery, 'Return value of removeLinks should be a jQuery object');
+    for (var i = 0; i < remove_links_test_objects.length; i++){
+        assert.equal(wikiDate.removeLinks(remove_links_test_objects[i].object).html(), remove_links_test_objects[i].expected);
+    }
 });
 
+/**
+ * Test that the html returned by getWiki info always conforms to 
+ * the wiki_info object pattern. This is done by testing against 
+ * actual examples.
+ */
+QUnit.asyncTest( "returns wiki_info object test", function ( assert ) {
+    var number_of_cases = 20;
+    QUnit.expect(number_of_cases);
+    QUnit.stop(number_of_cases-1);
+    
+    function checkWikiInfo (content, successful, year, month, day) {
+        assert.ok( wikiDateIsWikiInfo (content) === true );
+        QUnit.start();
+    }
+    
+    for (var i = 0; i < number_of_cases; i++) {
+        var date = wiki_date_random_date();
+        wikiDate.getWikiInfo(checkWikiInfo, date.year, date.month, date.day);
+    }
+});
 
 QUnit.asyncTest( "wiki_date coverage", function( assert ){ 
-    var number_of_cases = 2;
+    var number_of_cases = 20;
     QUnit.expect(number_of_cases);
     QUnit.stop(number_of_cases-1);
     function addContent (content, successful, year, month, day) {
@@ -122,9 +166,11 @@ QUnit.asyncTest( "wiki_date coverage", function( assert ){
         }
     }
     function theCallback (response, year, month, day) {
-        var successful = !(response == 'No info for this date.' );
+        var content = response.find('.wiki_date_content').first().html();
+        console.log('content: ', content);
+        var successful = !(content == 'No info for this date.' );
         addContent(response, successful, year, month, day);
-        assert.notEqual(response, 'No info for this date.');
+        assert.notEqual(content, 'No info for this date.');
         QUnit.start();
     }
 

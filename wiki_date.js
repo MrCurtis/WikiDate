@@ -1,3 +1,8 @@
+/**
+ * @file WikiDate a javascript library to include a bit of historical info
+ * on your site.
+ */
+
 var wikiDate = ( function () {
 
     var array_of_months = [
@@ -37,33 +42,48 @@ var wikiDate = ( function () {
             var filtered = $data_html.find(date_string).first();
             if (filtered.length){
                 var title = filtered.parent();
-                var content =title.next();
-                parsedData = $('<div></div>');
-                parsedData.append(title).append(content);
+                var content = title.next();
+                title = $('<div class="wiki_date_date"></div>').append(title);
+                content = $('<div class="wiki_date_content"></div>').append(content);
+                var reference = $('<div class="wiki_date_references"></div>');
+                var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
+                parsedData = $('<div class="wiki_date_info"></div>');
+                parsedData.append(title).append(content).append(reference);
                 return parsedData;
             }
             date_string = "#"+day+"_"+month+"_"+year;
             filtered = $data_html.find(date_string).first();
             if (filtered.length){
-                var title = filtered.next('h2');
-                console.log('h2: ', title);
-                var content = title.next('ul');
-                console.log('ul: ', content);
+                var title = $('<div class="wiki_date_date"></div>').append(filtered.next('h2'));
+                var content = $('<div class="wiki_date_content"></div>').append(title.next('ul'));
+                var reference = $('<div class="wiki_date_references"></div>');
+                var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
+                //should the below be an &&?
                 if (title.length || content.length){
-                    parsedData = $('<div></div>');
-                    parsedData.append(title).append(content);
+                    parsedData = $('<div class="wiki_date_info"></div>');
+                    parsedData.append(title).append(content).append(reference);
                     return parsedData;
                 }
             }
             date_string = "#"+year+"_"+month+"_"+day;
             filtered = $data_html.find(date_string).first();
             if (filtered.length){
+                console.log('date_string: ', date_string);
                 var container = filtered.next('.vevent');
                 if (container.length){
-                    content = container.children('tbody').first();
+                    var title = container.find('span.summary').first();
+                    var content = container.find('td.description').first();
                     if (content.length){
-                        parsedData = $('<div></div>');
-                        parsedData.append(title).append(content);
+                        title = $('<div class="wiki_date_date"></div>').append(title);
+                        content = $('<div class="wiki_date_content"></div>').append(content);
+                        var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                        var reference = $('<div class="wiki_date_references"></div>');
+                        reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
+                        parsedData = $('<div class="wiki_date_info"></div>');
+                        parsedData.append(title).append(content).append(reference);
+;
                         return parsedData;
                     }
                 }
@@ -93,7 +113,7 @@ var wikiDate = ( function () {
             var date_string = "[ title|=\""+month+" "+day+"\"]";
             filtered = $data_html.find("h2");
             if (filtered.length){
-                var pData = $('<div></div>');
+                var parsedData = $('<div class="wiki_date_info"></div>');
                 var haveMatch = false;
                 var eventType = ['Events', 'Births', 'Deaths'];
                 filtered.each( function () {
@@ -102,16 +122,20 @@ var wikiDate = ( function () {
                             var events = $(this).nextUntil("h2");
                             events = events.find(date_string);
                             if (events.length) {
-                                var title = $('<p></p>').html(eventType[event_index]);
+                                var title = $('<div class="wiki_date_date"></div>').html(eventType[event_index]);
                                 var content = events.first().parent();
-                                pData.append(title).append(content);
+                                content = $('<div class="wiki_date_content"></div>').append(content);
+                                var ref_url = 'http://en.wikipedia.org/wiki/'+year;
+                                var reference = $('<div class="wiki_date_references"></div>');
+                                reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
+                                parsedData.append(title).append(content).append(reference);
                                 haveMatch = true;
                             }
                         }
                     }
                 });
                 if (haveMatch){
-                    return pData;
+                    return parsedData;
                 }
             }
             return null;
@@ -159,7 +183,12 @@ var wikiDate = ( function () {
                     var page = array_of_pages_copy.pop();
                     makeAjax(page.url(year, month, day), page.parseData, callback, year, month, day, array_of_pages_copy);
                 }else{
-                    callback('No info for this date.', year, month, day);
+                    var wiki_no_info = $('<div class="wiki_date_info"></div>');
+                    var title = $('<div class="wiki_date_date"></div>');
+                    var content = $('<div class="wiki_date_content"></div>').html('No info for this date.');
+                    var reference = $('<div class="wiki_date_references"></div>');
+                    wiki_no_info.append(title).append(content).append(reference);
+                    callback(wiki_no_info, year, month, day);
                 }
             },
             error: function () {
@@ -188,7 +217,9 @@ var wikiDate = ( function () {
             throw new Error('WrongArgumentTypeError', 'First argument must be a jQuery object');
         }
         content.find('a').each(function (){
-            $(this).contents().unwrap();
+            if (!($(this).hasClass('wiki_date_link'))){
+                $(this).contents().unwrap();
+            }
         });
         content.find('.reference').remove();
         content.find('.mw-editsection').remove();
