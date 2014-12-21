@@ -22,7 +22,7 @@ var wikiDate = ( function () {
 
     var year_and_month_page = {
         url: function (year, month, day){
-            return 'http://en.wikipedia.org/w/api.php?action=parse&format=json&page='+month+'_'+year;
+            return 'https://en.wikipedia.org/w/api.php?action=parse&format=json&page='+month+'_'+year;
         },
 
         parseData: function  (data, year, month, day){
@@ -46,7 +46,7 @@ var wikiDate = ( function () {
                 title = $('<div class="wiki_date_date"></div>').append(title);
                 content = $('<div class="wiki_date_content"></div>').append(content);
                 var reference = $('<div class="wiki_date_references"></div>');
-                var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                var ref_url = 'https://en.wikipedia.org/wiki/'+month+'_'+year;
                 reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
                 parsedData = $('<div class="wiki_date_info"></div>');
                 parsedData.append(title).append(content).append(reference);
@@ -58,7 +58,7 @@ var wikiDate = ( function () {
                 var title = $('<div class="wiki_date_date"></div>').append(filtered.next('h2'));
                 var content = $('<div class="wiki_date_content"></div>').append(title.next('ul'));
                 var reference = $('<div class="wiki_date_references"></div>');
-                var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                var ref_url = 'https://en.wikipedia.org/wiki/'+month+'_'+year;
                 reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
                 //should the below be an &&?
                 if (title.length || content.length){
@@ -78,7 +78,7 @@ var wikiDate = ( function () {
                     if (content.length){
                         title = $('<div class="wiki_date_date"></div>').append(title);
                         content = $('<div class="wiki_date_content"></div>').append(content);
-                        var ref_url = 'http://en.wikipedia.org/wiki/'+month+'_'+year;
+                        var ref_url = 'https://en.wikipedia.org/wiki/'+month+'_'+year;
                         var reference = $('<div class="wiki_date_references"></div>');
                         reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
                         parsedData = $('<div class="wiki_date_info"></div>');
@@ -95,7 +95,7 @@ var wikiDate = ( function () {
 
     var year_page = {
         url: function (year, month, day){
-            return 'http://en.wikipedia.org/w/api.php?action=parse&format=json&page='+year;
+            return 'https://en.wikipedia.org/w/api.php?action=parse&format=json&page='+year;
         },
         parseData: function (data, year, month, day){
             var parsedData = null;
@@ -125,7 +125,7 @@ var wikiDate = ( function () {
                                 var title = $('<div class="wiki_date_date"></div>').html(eventType[event_index]);
                                 var content = events.first().parent();
                                 content = $('<div class="wiki_date_content"></div>').append(content);
-                                var ref_url = 'http://en.wikipedia.org/wiki/'+year;
+                                var ref_url = 'https://en.wikipedia.org/wiki/'+year;
                                 var reference = $('<div class="wiki_date_references"></div>');
                                 reference.html('Ref: <a class="wiki_date_link" href="'+ref_url+'">'+ref_url+'</a>');
                                 parsedData.append(title).append(content).append(reference);
