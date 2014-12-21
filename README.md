@@ -15,7 +15,7 @@ where the *wiki_date_date* div contains the date information, the *wiki_date_con
 Basic Example
 -------------
 
-A minimal example can be found can be found in the wiki_date_basic_example.html file. In this example a callback is defined to inject the wiki_info object into the page.
+A minimal example can be found can be found [here](http://mrcurtis.github.io/WikiDate/). In this example a callback is defined to inject the wiki_info object into the page.
 >		function addContentToDiv (content) {
 >        			wikiDate.removeLinks(content);
 >        			$('#wiki_content').html(content);
